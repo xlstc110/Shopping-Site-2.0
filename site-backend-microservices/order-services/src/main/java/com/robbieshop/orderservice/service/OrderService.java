@@ -3,7 +3,6 @@ package com.robbieshop.orderservice.service;
 import com.robbieshop.orderservice.dto.InventoryResponseDTO;
 import com.robbieshop.orderservice.dto.OrderItemsDTO;
 import com.robbieshop.orderservice.dto.OrderRequestDTO;
-import com.robbieshop.orderservice.dto.OrderResponseDTO;
 import com.robbieshop.orderservice.model.Order;
 import com.robbieshop.orderservice.model.OrderItems;
 import com.robbieshop.orderservice.repository.OrderRespository;

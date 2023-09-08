@@ -33,10 +33,4 @@ public class ProductController {
         return products;
     }
 
-//    @GetMapping({"{id}"})
-//    @ResponseStatus(HttpStatus.OK)
-//    public ProductResponseDTO getOneProduct(RequestParam int ){
-//
-//    }
-
 }

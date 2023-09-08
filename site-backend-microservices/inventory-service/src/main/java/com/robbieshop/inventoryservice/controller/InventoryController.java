@@ -1,10 +1,8 @@
 package com.robbieshop.inventoryservice.controller;
 
 import com.robbieshop.inventoryservice.dto.InventoryResponseDTO;
-//import com.robbieshop.inventoryservice.repository.InventoryRepository;
 import com.robbieshop.inventoryservice.service.InventoryService;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
