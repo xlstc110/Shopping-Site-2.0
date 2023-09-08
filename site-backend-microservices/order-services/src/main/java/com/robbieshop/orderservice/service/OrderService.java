@@ -3,12 +3,14 @@ package com.robbieshop.orderservice.service;
 import com.robbieshop.orderservice.dto.InventoryResponseDTO;
 import com.robbieshop.orderservice.dto.OrderItemsDTO;
 import com.robbieshop.orderservice.dto.OrderRequestDTO;
+import com.robbieshop.orderservice.event.OrderPlacedEvent;
 import com.robbieshop.orderservice.model.Order;
 import com.robbieshop.orderservice.model.OrderItems;
 import com.robbieshop.orderservice.repository.OrderRespository;
 import io.micrometer.tracing.Span;
 import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,6 +27,7 @@ public class OrderService {
     private final OrderRespository orderRespository;
     private final WebClient.Builder webClientBuilder;
     private final Tracer tracer;
+    private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
 
     public String placeOrder(OrderRequestDTO orderRequesDTO){
         Order order = new Order();
@@ -53,6 +56,7 @@ public class OrderService {
 
             if(allInStock){
                 orderRespository.save(order);
+                kafkaTemplate.send("notificationTopic", new OrderPlacedEvent(order.getOrderNumber()));
                 return "Order placed, thank you!";
             } else {
                 throw new IllegalArgumentException("Product insufficient, place make another order");
