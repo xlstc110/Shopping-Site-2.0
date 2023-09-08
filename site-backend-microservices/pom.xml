@@ -82,6 +82,20 @@
                     </excludes>
                 </configuration>
             </plugin>
+
+            <plugin>
+            <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.2.1</version>
+                <configuration>
+                    <from>
+                        <image>openjdk:17</image>
+                    </from>
+                    <to>
+                        <image>registry.hub.docker.com/xlstc110/${project.artifactId}</image>
+                    </to>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

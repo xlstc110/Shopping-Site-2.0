@@ -36,3 +36,10 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Docker compose folders
+/mongo-data
+/mysql_keycloak_data
+/postgres-inventory
+/postgres-order
+/realms
