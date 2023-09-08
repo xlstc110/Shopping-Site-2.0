@@ -6,6 +6,8 @@ import com.robbieshop.orderservice.dto.OrderRequestDTO;
 import com.robbieshop.orderservice.model.Order;
 import com.robbieshop.orderservice.model.OrderItems;
 import com.robbieshop.orderservice.repository.OrderRespository;
+import io.micrometer.tracing.Span;
+import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,7 @@ public class OrderService {
 
     private final OrderRespository orderRespository;
     private final WebClient.Builder webClientBuilder;
+    private final Tracer tracer;
 
     public String placeOrder(OrderRequestDTO orderRequesDTO){
         Order order = new Order();
@@ -37,22 +40,26 @@ public class OrderService {
                                 .map(orderItems -> orderItems.getSkuCode())
                                 .toList();
 
-        InventoryResponseDTO[] inventoryResponseArray = webClientBuilder.build().get()
-                            .uri("http://inventory-service/api/inventory",
-                                    uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build())
-                            .retrieve()
-                            .bodyToMono(InventoryResponseDTO[].class)
-                            .block();
+        Span inventoryService = tracer.nextSpan().name("inventory-service");
+        try(Tracer.SpanInScope isSpanInScope = tracer.withSpan(inventoryService.start())){
+            InventoryResponseDTO[] inventoryResponseArray = webClientBuilder.build().get()
+                    .uri("http://inventory-service/api/inventory",
+                            uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build())
+                    .retrieve()
+                    .bodyToMono(InventoryResponseDTO[].class)
+                    .block();
 
-        boolean allInStock = Arrays.stream(inventoryResponseArray).allMatch(inventoryResponse -> inventoryResponse.getIsStock());
+            boolean allInStock = Arrays.stream(inventoryResponseArray).allMatch(inventoryResponse -> inventoryResponse.getIsStock());
 
-        if(allInStock){
-            orderRespository.save(order);
-            return "Order placed, thank you!";
-        } else {
-            throw new IllegalArgumentException("Product insufficient, place make another order");
+            if(allInStock){
+                orderRespository.save(order);
+                return "Order placed, thank you!";
+            } else {
+                throw new IllegalArgumentException("Product insufficient, place make another order");
+            }
+        } finally {
+            inventoryService.end();
         }
-
 
     }
 
