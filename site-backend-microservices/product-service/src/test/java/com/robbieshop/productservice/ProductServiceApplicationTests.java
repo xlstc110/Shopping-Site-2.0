@@ -37,7 +37,16 @@ class ProductServiceApplicationTests {
 
 	@DynamicPropertySource
 	static void setProperties(DynamicPropertyRegistry dynamicPropertyRegistry){
-		dynamicPropertyRegistry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
+		//set up dynamic properties for testing with a MongoDB container. @DynamicPropertySource is used in Spring to
+		//dynamically register properties in the Environment, and it's often used in integration tests to override properties based on what's present in the test environment.
+
+		dynamicPropertyRegistry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);//or regular lambda: () -> mongoDBContainer.getReplicaSetUrl()
+		//This mongoDBContainer::getReplicaSetUrl is a method reference in Java, which is a shorthand notation for a lambda expression that calls a method.
+		//Here, it's presumably calling the getReplicaSetUrl method on an instance of a mongoDBContainer class, which should return the URI needed to connect to the MongoDB instance managed by the test container.
+
+		//When your tests run, Spring will call this method to get the actual MongoDB URI from the running container and will set it as the property value,
+		//so your data layer can connect to the correct MongoDB instance. This approach is very helpful for ensuring that your tests are not dependent on a specific configuration
+		//and can adapt to the environment where they are run, especially when dealing with containers.
 	}
 
 	@Test

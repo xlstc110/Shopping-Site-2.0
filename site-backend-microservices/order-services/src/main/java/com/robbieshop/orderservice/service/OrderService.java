@@ -9,6 +9,7 @@ import com.robbieshop.orderservice.model.OrderItems;
 import com.robbieshop.orderservice.repository.OrderRespository;
 import io.micrometer.tracing.Span;
 import io.micrometer.tracing.Tracer;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Transactional
 public class OrderService {
 
